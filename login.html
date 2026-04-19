@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Deal Intelligence Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }  
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #c0392b;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fadbd8;
+            border: 1px solid #f5b7b1;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #d5f4e6;
+            border: 1px solid #abebc6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .demo-credentials {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .demo-credentials p {
+            margin-bottom: 5px;
+        }
+
+        .demo-credentials strong {
+            color: #333;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Deal Intelligence Agent</h1>
+            <p>Sales Analysis Dashboard</p>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div id="errorAlert" class="error-message"></div>
+            <div id="successAlert" class="success-message"></div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="admin" placeholder="Enter username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" value="password123" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">Login</button>
+            <div class="loading" id="loading">Logging in...</div>
+        </form>
+
+        <div class="demo-credentials">
+            <p><strong>Demo Credentials:</strong></p>
+            <p>Username: <strong>admin</strong></p>
+            <p>Password: <strong>password123</strong></p>
+            <p style="margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px;">
+                Username: <strong>user1</strong><br>
+                Password: <strong>test123</strong>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            const loginBtn = document.getElementById('loginBtn');
+            const loading = document.getElementById('loading');
+
+            console.log('Login attempt:', { username, password: '***' });
+
+            // Hide previous messages
+            errorAlert.style.display = 'none';
+            successAlert.style.display = 'none';
+
+            // Validate input
+            if (!username || !password) {
+                errorAlert.textContent = 'Please enter both username and password';
+                errorAlert.style.display = 'block';
+                return;
+            }
+
+            // Show loading
+            loginBtn.style.display = 'none';
+            loading.style.display = 'block';
+
+            // Send login request
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json().then(data => ({
+                    status: response.status,
+                    data: data
+                }));
+            })
+            .then(({ status, data }) => {
+                console.log('Response data:', data);
+                
+                if (status === 200 && data.success) {
+                    console.log('Login successful');
+                    sessionStorage.setItem('username', username);
+                    successAlert.textContent = 'Login successful! Redirecting...';
+                    successAlert.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1500);
+                } else {
+                    console.log('Login failed with status:', status);
+                    errorAlert.textContent = data.message || 'Invalid credentials. Please try again.';
+                    errorAlert.style.display = 'block';
+                    loginBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorAlert.textContent = 'Connection error. Please make sure the server is running at http://localhost:3000';
+                errorAlert.style.display = 'block';
+                loginBtn.style.display = 'block';
+                loading.style.display = 'none';
+            });
+        }
+
+        // Clear error messages when typing
+        document.getElementById('username').addEventListener('input', () => {
+            document.getElementById('errorAlert').style.display = 'none';
+        });
+        document.getElementById('password').addEventListener('input', () => {
+            document.getElementById('errorAlert').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
